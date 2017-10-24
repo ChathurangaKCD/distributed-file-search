@@ -10,32 +10,57 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import p2p_filesharing.Node;
 
 /**
  *
  * @author ChathurangaKCD
  */
-public class ServiceHeartbeat {
+class ServiceHeartbeat {
 
-    private static final String REQUEST_MESSAGE = "ISALIVE";
-    private static final String REPLY_MESSAGE = "ALIVE";
+    private static final String REQUEST_MESSAGE = "0000 ISALIVE";
+    private static final String REPLY_MESSAGE = "0000 ALIVE";
 
-    static boolean checkHeartbeat(Node node, int myPort) {
+    private static String getMyIP() {
+        return "127.0.0.1";
+    }
+
+    private static int getMyPort() {
+        return 9867;
+    }
+
+    static boolean checkHeartbeat(Node node) {
         try {
             InetAddress address = InetAddress.getByName(node.getIp());
-            sendMessege(address, node.getPort(), myPort, REQUEST_MESSAGE);
+            sendMessege(address, node.getPort(), buildMessage(REQUEST_MESSAGE));
             return true;
         } catch (UnknownHostException ex) {
-            Logger.getLogger(ServiceHeartbeat.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
-    static void sendMessege(InetAddress IPAddress, int port, int myPort, String message) {
-        try (DatagramSocket socket = new DatagramSocket(myPort)) {
+    static boolean replyHeartbeatRequest(Node node) {//"0000 ISALIVE local_ip local_port"
+        try {
+            InetAddress address = InetAddress.getByName(node.getIp());
+            sendMessege(address, node.getPort(), buildMessage(REPLY_MESSAGE));
+            return true;
+        } catch (UnknownHostException ex) {
+        }
+        return false;
+    }
+
+    static String buildMessage(String message) {
+        StringBuilder msg = new StringBuilder(message);
+        msg.append(" ");
+        msg.append(getMyIP());
+        msg.append(" ");
+        msg.append(getMyPort());
+        msg.replace(2, 4, "" + msg.length());
+        return msg.toString();
+    }
+
+    static void sendMessege(InetAddress IPAddress, int port, String message) {
+        try (DatagramSocket socket = new DatagramSocket(getMyPort())) {
             byte[] sendData = message.getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
             socket.send(sendPacket);

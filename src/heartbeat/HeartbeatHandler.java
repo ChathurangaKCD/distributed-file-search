@@ -13,22 +13,34 @@ import p2p_filesharing.Node;
  */
 public class HeartbeatHandler {
 
-    static int port;
+    private static HeartbeatHandler instance;
 
+    private HeartbeatHandler() {
+    }
+
+    public static HeartbeatHandler getInstance() {
+        if (instance == null) {
+            instance = new HeartbeatHandler();
+        }
+        return instance;
+    }
     /**
-     * Sends a ping and a service heartbeat request.
-     * Returns false if ping is not successful.
+     * Sends a ping and a service heartbeat request. Returns false if ping is
+     * not successful.
+     *
      * @param node
      * @return
      */
     boolean checkHeartbeat(Node node) {
         if (NetworkHeartbeat.checkHeartbeat(node)) {
-            ServiceHeartbeat.checkHeartbeat(node, port);
+            ServiceHeartbeat.checkHeartbeat(node);
             return true;
         }
         return false;
     }
-    void updateHeartbeat(Node node){
-        
+
+    void updateHeartbeat(Node node) {
+
     }
+
 }
