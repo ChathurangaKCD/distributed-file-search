@@ -13,7 +13,7 @@ import p2p_filesharing.Node;
  *
  * @author ChathurangaKCD
  */
-public class NetworkHeartbeat {
+class NetworkHeartbeat {
         static boolean checkHeartbeat(Node node) {
         try {
             InetAddress address = InetAddress.getByName(node.getIp());
